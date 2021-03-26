@@ -10,7 +10,9 @@ class HomeController extends ChangeNotifier {
   late DateTime startFilter;
   late DateTime endFilter;
   Map<String, List<TodoModel>>? listTodos;
+
   HomeController({required this.repository}) {
+    // repository.saveTodo(DateTime.now(), 'Teste 1');
     findAllForWeek();
   }
 

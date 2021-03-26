@@ -87,26 +87,27 @@ class HomePage extends StatelessWidget {
                       shrinkWrap: true,
                       itemCount: todos?.length,
                       itemBuilder: (_, index) {
+                        var todo = todos?[index];
                         return ListTile(
                           leading: Checkbox(
-                            value: false,
+                            value: todo?.finalizado,
                             onChanged: (_) {},
                           ),
                           title: (Text(
-                            'Tarefa X',
+                            todo!.descricao,
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 20,
-                                decoration: true
+                                decoration: todo.finalizado
                                     ? TextDecoration.lineThrough
                                     : TextDecoration.none),
                           )),
                           trailing: (Text(
-                            '06:00',
+                            '${todo.dataHora.hour}:${todo.dataHora.minute}',
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 20,
-                                decoration: true
+                                decoration: todo.finalizado
                                     ? TextDecoration.lineThrough
                                     : TextDecoration.none),
                           )),

@@ -19,7 +19,7 @@ class TodosRepository {
   void saveTodo(DateTime dateTimeTask, String descricao) async {
     var conn = await Connection().instance;
 
-    await conn.rawInsert('insert into todo values(?,?,?,?,)',
+    await conn.rawInsert('insert into todo values(?,?,?,?)',
         [null, descricao, dateTimeTask.toIso8601String(), 0]);
   }
 
