@@ -1,5 +1,6 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 
 import 'package:provider/provider.dart';
@@ -41,6 +42,21 @@ class HomePage extends StatelessWidget {
             child: ListView.builder(
               itemCount: controller.listTodos?.keys.length ?? 0,
               itemBuilder: (_, index) {
+                var dateFormat = DateFormat('dd/MM/aaaa');
+                var listTodos = controller.listTodos;
+                var dayKey = listTodos?.keys.elementAt(index);
+                var day = dayKey;
+                var todos = listTodos![dayKey];
+
+                var today = DateTime.now();
+
+                if (dayKey == dateFormat.format(today)) {
+                  day = 'HOJE';
+                } else if (dayKey ==
+                    dateFormat.format(today.add(Duration(days: 1)))) {
+                  day = 'AMANHÃ';
+                }
+
                 return Column(
                   children: [
                     Padding(
@@ -69,7 +85,7 @@ class HomePage extends StatelessWidget {
                     ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: 4,
+                      itemCount: todos?.length,
                       itemBuilder: (_, index) {
                         return ListTile(
                           leading: Checkbox(
