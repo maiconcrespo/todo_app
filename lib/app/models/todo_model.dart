@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 class TodoModel {
-  int? id;
-  String? descricao;
+  int id;
+  String descricao;
   DateTime dataHora;
   bool finalizado;
   TodoModel({

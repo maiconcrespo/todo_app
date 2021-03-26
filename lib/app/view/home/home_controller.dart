@@ -37,6 +37,7 @@ class HomeController extends ChangeNotifier {
       listTodos = {dateFormat.format(DateTime.now()): []};
     } else {
       listTodos =
+          // GroupBy nao importa por padrao
           groupBy(todos, (TodoModel todo) => dateFormat.format(todo.dataHora));
     }
     this.notifyListeners();

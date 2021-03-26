@@ -10,42 +10,38 @@ import 'migration_v1.dart/migration_v1.dart';
 class Connection {
   static const VERSION = 1;
   static const DATABASE_NAME = 'TODO_LIST';
-  static late Connection _instance;
-  Database _db;
+  //static Connection _instance;
+  late Database _db;
   final _lock = Lock();
 
   factory Connection() {
-    _instance = Connection._();
+    var _instance = Connection._();
 
     return _instance;
   }
+
   Connection._();
   Future<Database> get instance async => await _openConnection();
 
   Future<Database> _openConnection() async {
-    if (_db == null) {
-      await _lock.synchronized(() async {
-        if (_db == null) {
-          var databasePath = await getDatabasesPath();
+    await _lock.synchronized(() async {
+      var databasePath = await getDatabasesPath();
 
-          var pathDatabase = join(databasePath, DATABASE_NAME);
-          print('$pathDatabase');
-          openDatabase(
-            pathDatabase,
-            version: VERSION,
-            onConfigure: _onConfigure,
-            onCreate: _onCreate,
-            onUpgrade: _onUpgrade,
-          );
-        }
-      });
-    }
+      var pathDatabase = join(databasePath, DATABASE_NAME);
+      print('$pathDatabase');
+      _db = await openDatabase(
+        pathDatabase,
+        version: VERSION,
+        onConfigure: _onConfigure,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+      );
+    });
     return _db;
   }
 
   void closeConnection() {
     _db.close();
-    _db = null;
   }
 
   Future<FutureOr<void>> _onConfigure(Database db) async {
