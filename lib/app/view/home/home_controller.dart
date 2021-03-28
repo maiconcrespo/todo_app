@@ -5,24 +5,22 @@ import 'package:todo_app/app/repositories/todo_repository.dart';
 import 'package:collection/collection.dart';
 
 class HomeController extends ChangeNotifier {
+  late DateTime? daySelected;
   final TodosRepository repository;
   int selectedTab = 1;
   late DateTime startFilter;
   late DateTime endFilter;
-  Map<String, List<TodoModel>>? listTodos;
+  Map<String, List<TodoModel>> listTodos = {};
+  var dateFormat = DateFormat('dd/MM/yyyy');
 
   HomeController({required this.repository}) {
-    // repository.saveTodo(DateTime.now(), 'Teste 1');
+    //repository.saveTodo(DateTime.now().add(Duration(days: 1)), 'Flutter 4');
+    //repository.saveTodo(DateTime.now().subtract(Duration(days: 0)), 'Dart 3');
     findAllForWeek();
   }
 
-  void changeSelectedTab(index) {
-    selectedTab = index;
-    notifyListeners();
-  }
-
   Future<void> findAllForWeek() async {
-    var dateFormat = DateFormat('dd/MM/yyyy');
+    daySelected = DateTime.now();
 
     startFilter = DateTime.now();
 
@@ -42,6 +40,41 @@ class HomeController extends ChangeNotifier {
           // GroupBy nao importa por padrao
           groupBy(todos, (TodoModel todo) => dateFormat.format(todo.dataHora));
     }
+    this.notifyListeners();
+  }
+
+  Future<void> changeSelectedTab(BuildContext context, int index) async {
+    selectedTab = index;
+    switch (index) {
+      case 0:
+        filterFinalized();
+        break;
+      case 1:
+        findAllForWeek();
+        break;
+      case 2:
+        daySelected = await showDatePicker(
+          context: context,
+          initialDate: daySelected!,
+          firstDate: DateTime.now().subtract(Duration(days: (360 * 3))),
+          lastDate: DateTime.now().add(Duration(days: (360 * 10))),
+        );
+        break;
+    }
+    notifyListeners();
+  }
+
+  void checkedOrUncheck(TodoModel todo) {
+    todo.finalizado = !todo.finalizado;
+    this.notifyListeners();
+    repository.checkOrUncheckTodo(todo);
+  }
+
+  void filterFinalized() {
+    listTodos = listTodos.map((key, value) {
+      var todosFinalized = value.where((t) => t.finalizado).toList();
+      return MapEntry(key, todosFinalized);
+    });
     this.notifyListeners();
   }
 }

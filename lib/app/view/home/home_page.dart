@@ -31,27 +31,32 @@ class HomePage extends StatelessWidget {
               TabItem(icon: Icons.calendar_today, title: 'Selec. Data'),
             ],
             initialActiveIndex: controller.selectedTab, //optional, default as 0
-            onTap: (index) {
+            onTap: (index) async {
               print(index);
-              return controller.changeSelectedTab(index);
+              return await controller.changeSelectedTab(context, index);
             },
           ),
           body: Container(
             width: size.width,
             height: size.height,
             child: ListView.builder(
-              itemCount: controller.listTodos?.keys.length ?? 0,
+              itemCount: controller.listTodos.keys.length,
               itemBuilder: (_, index) {
-                var dateFormat = DateFormat('dd/MM/aaaa');
+                var dateFormat = DateFormat('dd/MM/yyyy');
                 var listTodos = controller.listTodos;
-                var dayKey = listTodos?.keys.elementAt(index);
+                var dayKey = listTodos.keys.elementAt(index);
                 var day = dayKey;
-                var todos = listTodos![dayKey];
+                var todos = listTodos[dayKey];
+
+                if (todos!.isEmpty && controller.selectedTab == 0) {
+                  return SizedBox.shrink();
+                }
 
                 var today = DateTime.now();
 
                 if (dayKey == dateFormat.format(today)) {
                   day = 'HOJE';
+                  print(day);
                 } else if (dayKey ==
                     dateFormat.format(today.add(Duration(days: 1)))) {
                   day = 'AMANHÃ';
@@ -66,7 +71,7 @@ class HomePage extends StatelessWidget {
                         children: [
                           Expanded(
                               child: Text(
-                            'Hoje',
+                            day,
                             style: TextStyle(
                                 fontSize: 30, fontWeight: FontWeight.bold),
                           )),
@@ -85,16 +90,18 @@ class HomePage extends StatelessWidget {
                     ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: todos?.length,
+                      itemCount: todos.length,
                       itemBuilder: (_, index) {
-                        var todo = todos?[index];
+                        var todo = todos[index];
                         return ListTile(
                           leading: Checkbox(
-                            value: todo?.finalizado,
-                            onChanged: (_) {},
+                            activeColor: Theme.of(context).primaryColor,
+                            value: todo.finalizado,
+                            onChanged: (bool? value) =>
+                                controller.checkedOrUncheck(todo),
                           ),
                           title: (Text(
-                            todo!.descricao,
+                            todo.descricao,
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 20,

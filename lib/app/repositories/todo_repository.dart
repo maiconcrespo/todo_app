@@ -4,7 +4,7 @@ import 'package:todo_app/app/models/todo_model.dart';
 class TodosRepository {
   Future<List<TodoModel>> findByPeriod(DateTime start, DateTime end) async {
     var startFilter = DateTime(start.year, start.month, start.day, 0, 0, 0);
-    var endFilter = DateTime(end.year, end.month, end.day, 0, 0, 0);
+    var endFilter = DateTime(end.year, end.month, end.day, 23, 59, 59);
 
     var conn = await Connection().instance;
 
