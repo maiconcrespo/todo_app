@@ -5,7 +5,7 @@ import 'package:todo_app/app/repositories/todo_repository.dart';
 import 'package:collection/collection.dart';
 
 class HomeController extends ChangeNotifier {
-  late DateTime? daySelected;
+  late DateTime daySelected;
   final TodosRepository repository;
   int selectedTab = 1;
   late DateTime startFilter;
@@ -53,12 +53,14 @@ class HomeController extends ChangeNotifier {
         findAllForWeek();
         break;
       case 2:
-        daySelected = await showDatePicker(
-          context: context,
-          initialDate: daySelected!,
-          firstDate: DateTime.now().subtract(Duration(days: (360 * 3))),
-          lastDate: DateTime.now().add(Duration(days: (360 * 10))),
-        );
+        daySelected = (await showDatePicker(
+              context: context,
+              initialDate: daySelected,
+              firstDate: DateTime.now().subtract(Duration(days: (360 * 3))),
+              lastDate: DateTime.now().add(Duration(days: (360 * 10))),
+            )) ??
+            DateTime.now();
+        findTodosbySelectedDay();
         break;
     }
     notifyListeners();
@@ -75,6 +77,20 @@ class HomeController extends ChangeNotifier {
       var todosFinalized = value.where((t) => t.finalizado).toList();
       return MapEntry(key, todosFinalized);
     });
+    this.notifyListeners();
+  }
+
+  Future<void> findTodosbySelectedDay() async {
+    var todos = await repository.findByPeriod(daySelected, daySelected);
+
+    if (todos.isEmpty) {
+      listTodos = {dateFormat.format(DateTime.now()): []};
+      print('data');
+    } else {
+      listTodos =
+          // GroupBy nao importa por padrao
+          groupBy(todos, (TodoModel todo) => dateFormat.format(todo.dataHora));
+    }
     this.notifyListeners();
   }
 }
