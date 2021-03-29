@@ -1,6 +1,6 @@
 # todo_app
 
-A new Flutter project.
+Aplicativo de aprendizagem todo para Academia do Flutter
 
 ## Getting Started
 
