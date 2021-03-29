@@ -53,13 +53,16 @@ class HomeController extends ChangeNotifier {
         findAllForWeek();
         break;
       case 2:
-        daySelected = (await showDatePicker(
-              context: context,
-              initialDate: daySelected,
-              firstDate: DateTime.now().subtract(Duration(days: (360 * 3))),
-              lastDate: DateTime.now().add(Duration(days: (360 * 10))),
-            )) ??
-            DateTime.now();
+        var day = await showDatePicker(
+          context: context,
+          initialDate: daySelected,
+          firstDate: DateTime.now().subtract(Duration(days: (360 * 3))),
+          lastDate: DateTime.now().add(Duration(days: (360 * 10))),
+        );
+        if (day != null) {
+          daySelected = day;
+        }
+
         findTodosbySelectedDay();
         break;
     }
@@ -77,6 +80,7 @@ class HomeController extends ChangeNotifier {
       var todosFinalized = value.where((t) => t.finalizado).toList();
       return MapEntry(key, todosFinalized);
     });
+
     this.notifyListeners();
   }
 
@@ -84,7 +88,7 @@ class HomeController extends ChangeNotifier {
     var todos = await repository.findByPeriod(daySelected, daySelected);
 
     if (todos.isEmpty) {
-      listTodos = {dateFormat.format(DateTime.now()): []};
+      listTodos = {dateFormat.format(daySelected): []};
       print('data');
     } else {
       listTodos =
@@ -92,5 +96,18 @@ class HomeController extends ChangeNotifier {
           groupBy(todos, (TodoModel todo) => dateFormat.format(todo.dataHora));
     }
     this.notifyListeners();
+  }
+
+  Future<void> update() async {
+    if (selectedTab == 1) {
+      this.findAllForWeek();
+    } else if (selectedTab == 2) {
+      this.findTodosbySelectedDay();
+    }
+  }
+
+  Future<void> remove(TodoModel todo) async {
+    await repository.removeTodo(todo.id);
+    this.update();
   }
 }

@@ -16,7 +16,7 @@ class TodosRepository {
     return result.map((t) => TodoModel.fromMap(t)).toList();
   }
 
-  void saveTodo(DateTime dateTimeTask, String descricao) async {
+  Future<void> saveTodo(DateTime dateTimeTask, String descricao) async {
     var conn = await Connection().instance;
 
     await conn.rawInsert('insert into todo values(?,?,?,?)',
@@ -29,9 +29,9 @@ class TodosRepository {
         [todo.finalizado ? 1 : 0, todo.id]);
   }
 
-  void removeTodo(TodoModel todo) async {
+  Future<void> removeTodo(int id) async {
     var conn = await Connection().instance;
 
-    await conn.rawDelete('delete todo where id=?', [todo.id]);
+    await conn.rawDelete('delete from todo where id=?', [id]);
   }
 }

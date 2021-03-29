@@ -51,9 +51,13 @@ class _AppState extends State<App> {
           textTheme: GoogleFonts.robotoTextTheme(),
         ),
         routes: {
-          NewTaskPage.routerName: (context) => ChangeNotifierProvider(
-                create: (context) => NewTaskController(
-                    repository: context.read<TodosRepository>()),
+          NewTaskPage.routerName: (_) => ChangeNotifierProvider(
+                create: (context) {
+                  var day = ModalRoute.of(_)!.settings.arguments.toString();
+
+                  return NewTaskController(
+                      repository: context.read<TodosRepository>(), day: day);
+                },
                 child: NewTaskPage(),
               )
         },
